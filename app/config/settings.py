@@ -9,6 +9,7 @@ class Settings(BaseModel):
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
     openai_base_url: str | None = os.getenv("OPENAI_BASE_URL")
     groq_api_key: str | None = os.getenv("GROQ_API_KEY")
+    cashflow_api_url: str = os.getenv("CASHFLOW_API_URL")
 
     @model_validator(mode="after")
     def validate_at_least_one_provider(self) -> "Settings":
@@ -17,6 +18,16 @@ class Settings(BaseModel):
             raise ValueError(
                 "At least one LLM provider API key must be set. "
                 "Please set OPENAI_API_KEY or GROQ_API_KEY in your .env file."
+            )
+        return self
+    
+    @model_validator(mode="after")
+    def validate_cashflow_api_url(self) -> "Settings":
+        """Validate that the cashflow API URL is set."""
+        if not self.cashflow_api_url:
+            raise ValueError(
+                "CASHFLOW_API_URL is not set. "
+                "Please set it in your .env file to connect to the Cashflow API."
             )
         return self
 
