@@ -1,7 +1,8 @@
 {
     "dependencies": ["."],
     "graphs": {
-        "main_graph": "./app/workflow/graph.py:app"
+        "router": "./app/agents/router/graph.py:app",
+        "expense_agent": "./app/agents/expense/graph.py:app"
     },
     "env": ".env"
 }

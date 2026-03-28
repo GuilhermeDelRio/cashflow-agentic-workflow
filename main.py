@@ -6,13 +6,13 @@ def greeting():
 
 def main():
     greeting()
-    
+
     while True:
         user_input = input("> ")
-        
-        if user_input.lower() == 'quit':
+
+        if user_input.lower() == "quit":
             break
- 
+
     print("👋 Goodbye!")
 
 

@@ -17,6 +17,12 @@ class ExpenseData(BaseModel):
     installments_total: Optional[int] = None
 
 
+class ExpenseUpdate(BaseModel):
+    name: Optional[str] = None
+    value: Optional[float] = None
+    expense_date: Optional[date] = None
+
+
 class ExpenseAgentAction(BaseModel):
     action: Literal[
         "create_expense",
@@ -26,4 +32,4 @@ class ExpenseAgentAction(BaseModel):
         "ask_clarification",
         "none",
     ]
-    data: ExpenseData
+    data: Optional[ExpenseData] = None

@@ -4,6 +4,7 @@ import os
 
 load_dotenv()
 
+
 class Settings(BaseModel):
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
     openai_base_url: str | None = os.getenv("OPENAI_BASE_URL")
@@ -38,5 +39,6 @@ class Settings(BaseModel):
                 "GROQ_API_KEY is not set. "
                 "Please set it in your .env file to use Groq models."
             )
+
 
 settings = Settings()
