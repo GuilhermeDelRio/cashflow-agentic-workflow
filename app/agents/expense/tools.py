@@ -1,5 +1,6 @@
 from langchain.tools import tool
-from app.agents.expense.schemas import ExpenseData, ExpenseUpdate
+from typing import List
+from app.agents.expense.schemas import ExpenseData, ExpenseUpdate, Expense
 from app.api.client import api_client
 from app.api.exceptions import APIError
 
@@ -9,11 +10,11 @@ def create_expense(expense: ExpenseData) -> str:
     """Create a new expense record.
 
     Args:
-        expense: ExpenseData object containing name, value, expense_date, and optional recurrence/installments_total
+        expense: ExpenseData object containing description, amount, category, and date
     """
     try:
         api_client.create_expense(expense.model_dump(mode="json"))
-        return f"Expense '{expense.name}' for ${expense.value} created successfully."
+        return f"Expense '{expense.description}' for ${expense.amount} created successfully."
     except APIError as e:
         return f"Failed to create expense: {e.message}"
 
@@ -22,34 +23,34 @@ def create_expense(expense: ExpenseData) -> str:
 def list_expenses() -> str:
     """List all expense records."""
     try:
-        expenses = api_client.list_expenses()
+        expenses_data = api_client.list_expenses()
 
-        if not expenses:
+        if not expenses_data:
             return "No expenses found."
+
+        expenses = [Expense(**exp) for exp in expenses_data]
 
         lines = [f"Found {len(expenses)} expense(s):"]
         for exp in expenses:
-            recurrence = (
-                f" (Recurring: {exp.get('recurrence_type')})"
-                if exp.get("recurrence")
-                else ""
-            )
+            date_str = exp.date.strftime("%Y-%m-%d")
             lines.append(
-                f"  • {exp['name']}: ${exp['value']} on {exp['expense_date']}{recurrence}"
+                f"  • [{exp.id}] {exp.description}: ${exp.amount} ({exp.category.value}) on {date_str}"
             )
 
         return "\n".join(lines)
     except APIError as e:
         return f"Failed to list expenses: {e.message}"
+    except Exception as e:
+        return f"Failed to parse expenses: {str(e)}"
 
 
 @tool
-def update_expense(expense_id: int, updates: ExpenseUpdate) -> str:
+def update_expense(expense_id: str, updates: ExpenseUpdate) -> str:
     """Update an existing expense record.
 
     Args:
         expense_id: ID of the expense to update
-        updates: ExpenseUpdate object with optional name, value, and expense_date
+        updates: ExpenseUpdate object with optional description, amount, category, and date
     """
     try:
         api_client.update_expense(
@@ -63,7 +64,7 @@ def update_expense(expense_id: int, updates: ExpenseUpdate) -> str:
 
 
 @tool
-def delete_expense(expense_id: int) -> str:
+def delete_expense(expense_id: str) -> str:
     """Delete an expense record.
 
     Args:

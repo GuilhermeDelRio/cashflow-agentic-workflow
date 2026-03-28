@@ -4,7 +4,11 @@ from app.agents.shared.base import create_groq_llm, load_agent_prompt
 from app.agents.expense.graph import app as expense_app
 
 
-def router_node(state: MessagesState) -> dict:
+class RouterState(MessagesState):
+    intent: str = ""
+
+
+def router_node(state: RouterState) -> dict:
     """
     Router node that classifies user intent and stores it in state.
     """
@@ -26,7 +30,7 @@ def router_node(state: MessagesState) -> dict:
     }
 
 
-def route_to_agent(state: MessagesState) -> str:
+def route_to_agent(state: RouterState) -> str:
     """
     Conditional routing based on classified intent.
     """
@@ -38,19 +42,18 @@ def route_to_agent(state: MessagesState) -> str:
         return "general_agent"
 
 
-def expense_agent_node(state: MessagesState) -> dict:
+def expense_agent_node(state: RouterState) -> dict:
     """
     Invokes the expense agent subgraph.
     """
     messages = state["messages"]
-    user_messages = [msg for msg in messages if not msg.content.startswith("[Routing")]
-
+    user_messages = messages[0].content[0]["text"]
     result = expense_app.invoke({"messages": user_messages})
 
     return {"messages": result["messages"]}
 
 
-def general_agent_node(state: MessagesState) -> dict:
+def general_agent_node(state: RouterState) -> dict:
     """
     Handles general queries, greetings, and fallback responses.
     """
@@ -59,10 +62,6 @@ def general_agent_node(state: MessagesState) -> dict:
     )
 
     return {"messages": [response]}
-
-
-class RouterState(MessagesState):
-    intent: str = ""
 
 
 graph = StateGraph(RouterState)

@@ -1,26 +1,44 @@
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, Literal
-from datetime import date
+from datetime import datetime
 
 
-class RecurrenceType(str, Enum):
-    MONTHLY = "monthly"
-    YEARLY = "yearly"
+class Category(str, Enum):
+    FOOD = "food"
+    TRANSPORT = "transport"
+    UTILITIES = "utilities"
+    ENTERTAINMENT = "entertainment"
+    OTHER = "other"
+
+
+# class RecurrenceType(str, Enum):
+#     MONTHLY = "monthly"
+#     YEARLY = "yearly"
 
 
 class ExpenseData(BaseModel):
-    name: str
-    value: float
-    expense_date: date
-    recurrence: Optional[RecurrenceType] = None
-    installments_total: Optional[int] = None
+    description: str = Field(..., json_schema_extra={"json": "description"})
+    amount: float = Field(..., json_schema_extra={"json": "amount"})
+    category: Category = Field(..., json_schema_extra={"json": "category"})
+    date: datetime = Field(..., json_schema_extra={"json": "date"})
+
+
+class Expense(BaseModel):
+    id: str = Field(..., json_schema_extra={"json": "id"})
+    description: str = Field(..., json_schema_extra={"json": "description"})
+    amount: float = Field(..., json_schema_extra={"json": "amount"})
+    category: Category = Field(..., json_schema_extra={"json": "category"})
+    date: datetime = Field(..., json_schema_extra={"json": "date"})
+    created_at: datetime = Field(..., json_schema_extra={"json": "created_at"})
+    updated_at: datetime = Field(..., json_schema_extra={"json": "updated_at"})
 
 
 class ExpenseUpdate(BaseModel):
-    name: Optional[str] = None
-    value: Optional[float] = None
-    expense_date: Optional[date] = None
+    description: Optional[str] = None
+    amount: Optional[float] = None
+    category: Optional[Category] = None
+    date: Optional[datetime] = None
 
 
 class ExpenseAgentAction(BaseModel):
