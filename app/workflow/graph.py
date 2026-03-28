@@ -1,29 +1,23 @@
-from typing import Optional
 from langgraph.graph import StateGraph, MessagesState
 from langchain_core.messages import AIMessage
 
-class AgentState(MessagesState):
-    plan: Optional[str]
 
-
-def planner_node(state: AgentState):
+def entry_node(state: MessagesState) -> dict:
     messages = state.get("messages", [])
 
     if not messages:
-        return {}
+        return {"messages": [AIMessage(content="No input received.")]}
 
-    user_text = messages[-1].content
-    plan = f"Plano para: {user_text}"
+    user_message = messages[-1].content
+    
+    response = f"Received: {user_message}"
 
-    return {
-        "messages": [AIMessage(content=plan)],
-        "plan": plan
-    }
+    return {"messages": [AIMessage(content=response)]}
 
 
-graph = StateGraph(AgentState)
-graph.add_node("planner", planner_node)
-graph.set_entry_point("planner")
-graph.set_finish_point("planner")
+graph = StateGraph(MessagesState)
+graph.add_node("entry", entry_node)
+graph.set_entry_point("entry")
+graph.set_finish_point("entry")
 
 app = graph.compile()

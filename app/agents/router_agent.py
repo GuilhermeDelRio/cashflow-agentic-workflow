@@ -1,9 +1,13 @@
 from app.agents.base_agent import BaseAgent
 from app.llm.llm_config import LLMConfig
 
-class PlannerAgent(BaseAgent):
+class RouterAgent(BaseAgent):
     def run(self, state):
-        prompt = f"Crie um plano para: {state['input']}"
+        # prompt = f"Crie um plano para: {state['input']}"
+        
+        prompt = """
+        You are a router agent. Based on the user's input, decide whether to route the request to the PlannerAgent or another specialized agent.
+        """
 
         config = LLMConfig(
             model="gpt-4.1",
