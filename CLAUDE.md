@@ -35,6 +35,10 @@ make run
 # Test LangGraph workflows with UI
 make dev
 # or: uv run langgraph dev
+
+# Run Telegram bot
+make telegram
+# or: uv run python telegram_main.py
 ```
 
 ### Testing and Code Quality
@@ -86,8 +90,12 @@ app/
 │   ├── income/               # Income domain (future)
 │   └── shared/               # Shared utilities across agents
 │       └── base.py           # Base workflow helpers
-└── config/                   # Global configuration
-    └── settings.py
+├── config/                   # Global configuration
+│   └── settings.py
+└── integrations/             # External integrations
+    └── telegram/             # Telegram bot integration
+        ├── bot.py            # Bot initialization
+        └── handlers.py       # Message handlers
 ```
 
 **Benefits:**
@@ -198,7 +206,7 @@ LLMs are instantiated using these helpers and bound to tools using `.bind_tools(
 Settings are managed in `app/config/settings.py` using Pydantic:
 - Environment variables loaded via `python-dotenv`
 - **Required**: At least one of `OPENAI_API_KEY` or `GROQ_API_KEY`
-- **Optional**: `OPENAI_BASE_URL` for custom OpenAI endpoints
+- **Optional**: `OPENAI_BASE_URL` for custom OpenAI endpoints, `TELEGRAM_BOT_TOKEN` for Telegram integration
 - Validation ensures at least one provider is configured
 
 ### Prompt Management
@@ -368,10 +376,45 @@ When you add a new specialized agent (e.g., income), integrate it with the route
    }
    ```
 
+## Telegram Bot Integration
+
+The project includes a Telegram bot integration that provides a conversational interface to the agentic workflow system.
+
+### Architecture
+The Telegram integration is located in `app/integrations/telegram/`:
+- **bot.py**: Initializes the Telegram bot application and registers handlers
+- **handlers.py**: Implements message handling logic that invokes the router graph
+
+### How It Works
+1. User sends a message to the Telegram bot
+2. `message_handler` receives the message and invokes the router graph
+3. Router classifies intent and routes to the appropriate specialized agent (expense, income, etc.)
+4. Agent processes the request using LLM + tools
+5. Response is sent back to the user via Telegram
+
+### Setup
+1. Create a bot with [@BotFather](https://t.me/BotFather) on Telegram
+2. Get your bot token from BotFather
+3. Add `TELEGRAM_BOT_TOKEN=your_token_here` to `.env`
+4. Run `make telegram` or `uv run python telegram_main.py`
+
+### Available Commands
+- `/start` - Welcome message and bot introduction
+- `/help` - Show help with available features
+- Any text message - Processed through the router agent workflow
+
+### Key Features
+- Natural language processing via LangGraph workflows
+- Automatic intent classification and routing
+- Full access to all agent capabilities (expense, income, etc.)
+- Error handling and user feedback
+- Typing indicators during processing
+
 ## Current State
 
 The project is in active development with:
 - Working expense management workflow with tool-calling
+- Telegram bot integration for conversational interface
 - Basic CLI interface in `main.py` (simple input loop, not connected to workflows)
 - LangGraph test UI available via `langgraph dev`
 - Mocked API calls in tools (ready for backend integration)

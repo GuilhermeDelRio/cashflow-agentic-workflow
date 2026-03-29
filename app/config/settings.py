@@ -10,6 +10,7 @@ class Settings(BaseModel):
     openai_base_url: str | None = os.getenv("OPENAI_BASE_URL")
     groq_api_key: str | None = os.getenv("GROQ_API_KEY")
     cashflow_api_url: str = os.getenv("CASHFLOW_API_URL")
+    telegram_bot_token: str | None = os.getenv("TELEGRAM_BOT_TOKEN")
 
     @model_validator(mode="after")
     def validate_at_least_one_provider(self) -> "Settings":

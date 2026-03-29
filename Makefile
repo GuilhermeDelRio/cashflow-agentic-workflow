@@ -1,4 +1,4 @@
-.PHONY: help install install-dev sync clean test lint format type-check run dev graph-ui all
+.PHONY: help install install-dev sync clean test lint format type-check run dev graph-ui telegram all
 
 help:
 	@echo "Cashflow Agentic Workflow - Available Commands"
@@ -12,6 +12,7 @@ help:
 	@echo "  make run          - Run the main application"
 	@echo "  make dev          - Run LangGraph dev UI"
 	@echo "  make graph-ui     - Alias for 'make dev'"
+	@echo "  make telegram     - Run Telegram bot"
 	@echo ""
 	@echo "Code Quality:"
 	@echo "  make lint         - Run linter (ruff check)"
@@ -71,6 +72,10 @@ dev:
 	uv run langgraph dev
 
 graph-ui: dev
+
+telegram:
+	@echo "Starting Telegram bot..."
+	uv run python telegram_main.py
 
 all: format lint type-check test
 	@echo "All checks passed!"

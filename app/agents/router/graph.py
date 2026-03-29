@@ -47,7 +47,7 @@ def expense_agent_node(state: RouterState) -> dict:
     Invokes the expense agent subgraph.
     """
     messages = state["messages"]
-    user_messages = messages[0].content[0]["text"]
+    user_messages = [msg for msg in messages if not msg.content.startswith("[Routing")]
     result = expense_app.invoke({"messages": user_messages})
 
     return {"messages": result["messages"]}
