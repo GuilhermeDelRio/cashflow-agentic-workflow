@@ -10,7 +10,7 @@ from app.agents.expense.tools import create_expense, list_expenses, update_expen
 
 tools = [create_expense, list_expenses, update_expense, delete_expense]
 
-llm = create_groq_llm()
+llm = create_groq_llm(model="openai/gpt-oss-120b")
 llm_with_tools = llm.bind_tools(tools)
 
 prompt_content = load_agent_prompt("expense")

@@ -1,20 +1,23 @@
 from langchain.tools import tool
-from typing import List
 from app.agents.expense.schemas import ExpenseData, ExpenseUpdate, Expense
 from app.api.client import api_client
 from app.api.exceptions import APIError
 
 
 @tool
-def create_expense(expense: ExpenseData) -> str:
+def create_expense(description: str, amount: float, category: str, date: str) -> str:
     """Create a new expense record.
 
     Args:
-        expense: ExpenseData object containing description, amount, category, and date
+        description: Description of the expense
+        amount: Amount of the expense
+        category: Category of the expense (food, transport, utilities, entertainment, other)
+        date: Date of the expense in ISO format
     """
     try:
+        expense = ExpenseData(description=description, amount=amount, category=category, date=date)
         api_client.create_expense(expense.model_dump(mode="json"))
-        return f"Expense '{expense.description}' for ${expense.amount} created successfully."
+        return f"Expense '{description}' for ${amount} created successfully."
     except APIError as e:
         return f"Failed to create expense: {e.message}"
 

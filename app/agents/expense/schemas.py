@@ -1,7 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel, Field
 from typing import Optional, Literal
-from datetime import datetime
+import datetime as dt
 
 
 class Category(str, Enum):
@@ -18,10 +18,10 @@ class Category(str, Enum):
 
 
 class ExpenseData(BaseModel):
-    description: str = Field(..., json_schema_extra={"json": "description"})
-    amount: float = Field(..., json_schema_extra={"json": "amount"})
-    category: Category = Field(..., json_schema_extra={"json": "category"})
-    date: datetime = Field(..., json_schema_extra={"json": "date"})
+    description: str
+    amount: float
+    category: Category
+    date: dt.datetime
 
 
 class Expense(BaseModel):
@@ -29,16 +29,16 @@ class Expense(BaseModel):
     description: str = Field(..., json_schema_extra={"json": "description"})
     amount: float = Field(..., json_schema_extra={"json": "amount"})
     category: Category = Field(..., json_schema_extra={"json": "category"})
-    date: datetime = Field(..., json_schema_extra={"json": "date"})
-    created_at: datetime = Field(..., json_schema_extra={"json": "created_at"})
-    updated_at: datetime = Field(..., json_schema_extra={"json": "updated_at"})
+    date: dt.datetime = Field(..., json_schema_extra={"json": "date"})
+    created_at: dt.datetime = Field(..., json_schema_extra={"json": "created_at"})
+    updated_at: dt.datetime = Field(..., json_schema_extra={"json": "updated_at"})
 
 
 class ExpenseUpdate(BaseModel):
     description: Optional[str] = None
     amount: Optional[float] = None
     category: Optional[Category] = None
-    date: Optional[datetime] = None
+    date: Optional[dt.datetime] = None
 
 
 class ExpenseAgentAction(BaseModel):
